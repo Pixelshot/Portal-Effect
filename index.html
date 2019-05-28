@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <script src="./js/three.min.js"></script>
+    <title>Portal Effect</title>
+  </head>
+  <body>
+    <script>
+      var scene, sceneLight, cam, renderer;
+
+      function initScene() {
+        scene = new THREE.Scene();
+
+        sceneLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        sceneLight.position.set(0, 0, 1);
+        scene.add(sceneLight);
+
+        cam = new THREE.PerspectiveCamera(
+          80,
+          window.innerWidth / window.innerHeight,
+          1,
+          10000
+        );
+        cam.position.z = 1000;
+        scene.add(cam);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0x000000, 1);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        renderer.render(scene, cam);
+      }
+      initScene();
+    </script>
+  </body>
+</html>
