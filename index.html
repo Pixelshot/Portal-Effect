@@ -33,7 +33,25 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        renderer.render(scene, cam);
+        // renderer.render(scene, cam);
+        particleSetup();
+      }
+      function particleSetup() {
+        let loader = new THREE.TextureLoader();
+
+        loader.load("./js/smoke.png", function(texture) {
+          portalGeo = new THREE.PlaneBufferGeometry(350, 350);
+          portalMaterial = new THREE.MeshStandardMaterial({
+            map: texture,
+            transparent: true
+          });
+
+          let particle = new THREE.Mesh(portalGeo, portalMaterial);
+          particle.position.set(2, 2, 2);
+          scene.add(particle);
+
+          renderer.render(scene, cam);
+        });
       }
       initScene();
     </script>
