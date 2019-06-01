@@ -10,7 +10,14 @@
   </head>
   <body>
     <script>
-      var scene, sceneLight, cam, renderer;
+      var scene,
+        sceneLight,
+        portalLight,
+        cam,
+        renderer,
+        clock,
+        portalParticles = [],
+        smokeParticles = [];
 
       function initScene() {
         scene = new THREE.Scene();
@@ -18,6 +25,10 @@
         sceneLight = new THREE.DirectionalLight(0xffffff, 0.5);
         sceneLight.position.set(0, 0, 1);
         scene.add(sceneLight);
+
+        portalLight = new THREE.PointLight(0x062d89, 30, 350, 1.7);
+        portalLight.position.set(0, 0, 250);
+        scene.add(portalLight);
 
         cam = new THREE.PerspectiveCamera(
           80,
@@ -46,12 +57,66 @@
             transparent: true
           });
 
-          let particle = new THREE.Mesh(portalGeo, portalMaterial);
-          particle.position.set(2, 2, 2);
-          scene.add(particle);
+          // ========== SMOKE PARTICLE FUNCTION ==========
+          smokeGeo = new THREE.PlaneBufferGeometry(1000, 1000);
+          smokeMaterial = new THREE.MeshStandardMaterial({
+            map: texture,
+            transparent: true
+          });
+          // ==================================================
 
-          renderer.render(scene, cam);
+          // ========== PARTICLE FUNCTION (COMPLETE) ==========
+          for (let p = 880; p > 250; p--) {
+            let particle = new THREE.Mesh(portalGeo, portalMaterial);
+            particle.position.set(
+              0.5 * p * Math.cos((4 * p * Math.PI) / 180),
+              0.5 * p * Math.sin((4 * p * Math.PI) / 180),
+              0.1 * p
+            );
+            particle.rotation.z = Math.random() * 360;
+            portalParticles.push(particle);
+            scene.add(particle);
+          }
+          // ===== PARTICLE FUNCTION (PRE-IMPLEMENTATION) =====
+          // let particle = new THREE.Mesh(portalGeo, portalMaterial);
+          // particle.position.set(2, 2, 2);
+          // scene.add(particle);
+          // ==================================================
+
+          // ========== SMOKE ANIMATION FUNCTION ==========
+          for (let p = 0; p < 40; p++) {
+            let particle = new THREE.Mesh(smokeGeo, smokeMaterial);
+            particle.position.set(
+              Math.random() * 1000 - 500,
+              Math.random() * 700 - 400,
+              25
+            );
+            particle.rotation.z = Math.random() * 360;
+            particle.material.opacity = 0.1;
+            portalParticles.push(particle);
+            scene.add(particle);
+          }
+          // ==================================================
+
+          // ========== CLOCK FUNCTION ==========
+          clock = new THREE.Clock();
+          animate();
         });
+      }
+      // ========== RECURSIVE FUNCTION TO ANIMATE SCENE ==========
+      function animate() {
+        let delta = clock.getDelta();
+        portalParticles.forEach(p => {
+          p.rotation.z -= delta * 1.5;
+        });
+        smokeParticles.forEach(p => {
+          p.rotation.z -= delta * 0.2;
+        });
+        if (Math.random() > 0.9) {
+          portalLight.power = 350 + Math.random() * 500; // This is to add the flickering scene
+        }
+        renderer.render(scene, cam);
+        requestAnimationFrame(animate);
       }
       initScene();
     </script>
